@@ -1,0 +1,27 @@
+{
+  "name": "tachyon-oracles",
+  "version": "0.1.0",
+  "description": "Tachyon Oracles - Decentralized Price Feeds for X1",
+  "private": true,
+  "workspaces": [
+    "sdk",
+    "relayer",
+    "signer",
+    "demo"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "relayer": "npm run start -w relayer",
+    "signer": "npm run start -w signer",
+    "demo": "npm run start -w demo"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

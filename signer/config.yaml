@@ -1,0 +1,64 @@
+assets:
+  - id: "BTC/USD"
+    symbol:
+      binance: "BTCUSDT"
+      coinbase: "BTC-USD"
+      kraken: "XBTUSD"
+    sources: ["binance", "coinbase", "kraken"]
+  
+  - id: "ETH/USD"
+    symbol:
+      binance: "ETHUSDT"
+      coinbase: "ETH-USD"
+      kraken: "ETHUSD"
+    sources: ["binance", "coinbase", "kraken"]
+  
+  - id: "SOL/USD"
+    symbol:
+      binance: "SOLUSDT"
+      coinbase: "SOL-USD"
+      kraken: "SOLUSD"
+    sources: ["binance", "coinbase", "kraken"]
+  
+  - id: "AVAX/USD"
+    symbol:
+      binance: "AVAXUSDT"
+      coinbase: "AVAX-USD"
+      kraken: "AVAXUSD"
+    sources: ["binance", "coinbase", "kraken"]
+  
+  - id: "MATIC/USD"
+    symbol:
+      binance: "MATICUSDT"
+      coinbase: "MATIC-USD"
+      kraken: "MATICUSD"
+    sources: ["binance", "coinbase", "kraken"]
+  
+  - id: "BNB/USD"
+    symbol:
+      binance: "BNBUSDT"
+      coinbase: "BNB-USD"
+      kraken: "BNBUSD"
+    sources: ["binance", "coinbase", "kraken"]
+  
+  - id: "XRP/USD"
+    symbol:
+      binance: "XRPUSDT"
+      coinbase: "XRP-USD"
+      kraken: "XRPUSD"
+    sources: ["binance", "coinbase", "kraken"]
+  
+  - id: "ADA/USD"
+    symbol:
+      binance: "ADAUSDT"
+      coinbase: "ADA-USD"
+      kraken: "ADAUSD"
+    sources: ["binance", "coinbase", "kraken"]
+  
+  - id: "DOT/USD"
+    symbol:
+      binance: "DOTUSDT"
+      coinbase: "DOT-USD"
+      kraken: "DOTUSD"
+    sources: ["binance", "coinbase", "kraken"]
+

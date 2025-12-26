@@ -1,0 +1,28 @@
+{
+  "name": "@tachyon-oracles/signer",
+  "version": "0.1.0",
+  "description": "Validator signer daemon for Tachyon Oracles",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.87.6",
+    "@tachyon-oracles/sdk": "*",
+    "axios": "^1.6.2",
+    "bn.js": "^5.2.1",
+    "dotenv": "^16.3.1",
+    "tweetnacl": "^1.0.3",
+    "winston": "^3.11.0",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.5",
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

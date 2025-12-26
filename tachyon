@@ -1,0 +1,5 @@
+#!/bin/bash
+# Tachyon Oracles Console Launcher
+cd "$(dirname "$0")"
+./tachyon-console.sh
+
