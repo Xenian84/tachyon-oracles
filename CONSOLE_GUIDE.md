@@ -259,12 +259,15 @@ Automated setup for new nodes. **Recommended for first deployment!**
 
 ### What it Does:
 1. ✅ Installs dependencies (Node.js, PM2, Solana CLI)
-2. ✅ Generates unique keypairs
-3. ✅ Configures environment
-4. ✅ Builds all services
-5. ✅ Registers publisher on-chain
-6. ✅ Starts services
-7. ✅ Sets up API service
+2. ✅ Generates dedicated oracle keypairs:
+   - `signer.json` - Signs price data (registered as publisher)
+   - `relayer.json` - Submits transactions (pays gas fees)
+   - ⚠️ **Note**: Separate from your validator keys!
+3. ✅ Configures environment (.env file)
+4. ✅ Builds SDK, signer, and relayer services
+5. ✅ Registers signer key as publisher on-chain
+6. ✅ Starts all services with PM2
+7. ✅ Sets up API service for remote monitoring
 
 ### Usage:
 ```bash
@@ -276,7 +279,7 @@ Automated setup for new nodes. **Recommended for first deployment!**
 ### Duration:
 - Dependency installation: 2-5 minutes
 - Keypair generation: < 1 minute
-- Build: 1-2 minutes
+- Build (SDK + services): 2-3 minutes
 - Total: ~5-10 minutes
 
 ### After Setup:

@@ -67,12 +67,15 @@ In the console menu, select:
 The wizard will guide you through:
 
 1. **Dependency Installation** - Installs Node.js, PM2, Solana CLI
-2. **Keypair Generation** - Creates unique keypairs for your node
+2. **Keypair Generation** - Creates dedicated oracle keypairs:
+   - `signer.json` - Signs price data (must be registered as publisher)
+   - `relayer.json` - Submits transactions (needs SOL for fees)
+   - ⚠️ **Note**: These are separate from your validator keys!
 3. **Environment Configuration** - Sets up RPC endpoints and ports
-4. **Service Build** - Compiles TypeScript code
-5. **Publisher Registration** - Registers your node on-chain
+4. **Service Build** - Compiles SDK, signer, and relayer
+5. **Publisher Registration** - Registers your signer key on-chain
 6. **Service Startup** - Starts signer, relayer, and API services
-7. **API Service Setup** - Generates secure API key
+7. **API Service Setup** - Generates secure API key for monitoring
 
 ### Step 5: Verify Deployment
 

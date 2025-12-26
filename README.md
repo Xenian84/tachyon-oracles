@@ -205,11 +205,27 @@ Tap buttons for quick access:
 
 ## 🔐 Security
 
-### Private Keys
+### Keypairs
+
+The oracle uses **dedicated keypairs** separate from your validator keys:
+
+- **Signer Keypair** (`keys/signer.json`)
+  - Signs price data from exchanges
+  - Must be registered as a publisher on-chain
+  - Needs minimal balance for registration (~0.1 XNT)
+  
+- **Relayer Keypair** (`keys/relayer.json`)
+  - Submits price updates to blockchain
+  - Pays transaction fees
+  - Needs ongoing balance for gas fees (~1 XNT recommended)
+
+⚠️ **Important**: These are NOT your validator keys! Keep them separate for security.
+
+### Private Key Safety
 - **NEVER** commit private keys to git
-- Keys are stored in `keys/` directory (gitignored)
-- Each node generates unique keypairs
-- Keep your `keys/` directory backed up securely
+- Keys are stored in `keys/` directory (automatically gitignored)
+- Each node generates unique keypairs during setup
+- Keep your `keys/` directory backed up securely offline
 
 ### API Security
 - API key authentication required
