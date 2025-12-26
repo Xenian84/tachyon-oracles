@@ -1,0 +1,4 @@
+SECURITY NOTE:
+All sensitive tokens and keys have been revoked and regenerated.
+The repository history has been cleaned of any exposed secrets.
+If you see any secret scanning alerts, they refer to revoked tokens that are no longer valid.
