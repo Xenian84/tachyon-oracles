@@ -1710,12 +1710,12 @@ quick_start() {
     echo ""
     echo -e "  ${WHITE}This wizard will set up everything automatically:${NC}"
     echo -e "  ${GREEN}✓${NC} Check/install dependencies"
-    echo -e "  ${GREEN}✓${NC} Create validator keypair (if needed)"
+    echo -e "  ${GREEN}✓${NC} Create oracle keypairs (signer & relayer)"
     echo -e "  ${GREEN}✓${NC} Configure environment"
-    echo -e "  ${GREEN}✓${NC} Build all services"
-    echo -e "  ${GREEN}✓${NC} Register as publisher (if funded)"
+    echo -e "  ${GREEN}✓${NC} Build all services (SDK, signer, relayer)"
+    echo -e "  ${GREEN}✓${NC} ${BOLD}Register as publisher on-chain${NC}"
     echo -e "  ${GREEN}✓${NC} Setup API service (for Telegram bot)"
-    echo -e "  ${GREEN}✓${NC} Start all services"
+    echo -e "  ${GREEN}✓${NC} Start all services with PM2"
     echo ""
     echo -e "  ${YELLOW}⏱️  This takes about 2-3 minutes${NC}"
     echo ""
@@ -1846,12 +1846,43 @@ EOF
     
     # Step 6: Register publisher
     echo -e "\n${CYAN}[6/7]${NC} ${YELLOW}Registering as publisher...${NC}"
+    echo -e "${WHITE}This registers your signer keypair on-chain${NC}"
+    echo ""
+    
     if [ -f "$CONSOLE_DIR/scripts/register-publisher-simple.js" ]; then
-        node "$CONSOLE_DIR/scripts/register-publisher-simple.js" > /dev/null 2>&1 || echo -e "${YELLOW}⚠️  Already registered or error${NC}"
-        node "$CONSOLE_DIR/scripts/activate-publisher.js" > /dev/null 2>&1 || echo -e "${YELLOW}⚠️  Already active or error${NC}"
-        echo -e "${GREEN}✓ Publisher registration complete${NC}"
+        cd "$CONSOLE_DIR"
+        
+        # Register publisher with signer keypair
+        REGISTER_OUTPUT=$(node scripts/register-publisher-simple.js "$KEYS_DIR/signer.json" 2>&1)
+        REGISTER_EXIT=$?
+        
+        if [ $REGISTER_EXIT -eq 0 ]; then
+            if echo "$REGISTER_OUTPUT" | grep -q "already registered"; then
+                echo -e "${YELLOW}⚠️  Publisher already registered${NC}"
+            else
+                echo -e "${GREEN}✓ Publisher registered successfully!${NC}"
+                echo "$REGISTER_OUTPUT" | grep "Transaction signature:" || true
+            fi
+            
+            # Activate publisher (if needed)
+            if [ -f "$CONSOLE_DIR/scripts/activate-publisher.js" ]; then
+                ACTIVATE_OUTPUT=$(node scripts/activate-publisher.js 2>&1)
+                if echo "$ACTIVATE_OUTPUT" | grep -q "already active"; then
+                    echo -e "${GREEN}✓ Publisher already active${NC}"
+                elif echo "$ACTIVATE_OUTPUT" | grep -q "success"; then
+                    echo -e "${GREEN}✓ Publisher activated${NC}"
+                fi
+            fi
+        else
+            echo -e "${RED}❌ Registration failed${NC}"
+            echo "$REGISTER_OUTPUT" | tail -5
+            echo ""
+            echo -e "${YELLOW}You can register manually later:${NC}"
+            echo -e "${CYAN}./tachyon → 2 (Oracle Manager) → 3 (Register Publisher)${NC}"
+        fi
     else
         echo -e "${YELLOW}⚠️  Registration scripts not found, skipping...${NC}"
+        echo -e "${CYAN}You can register manually later from the Oracle Manager menu${NC}"
     fi
     
     # Step 7: Setup API Service
