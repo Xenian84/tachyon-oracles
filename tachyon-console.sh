@@ -3,6 +3,10 @@
 # Tachyon Oracles Console v1.0
 # Interactive management console for Tachyon Oracle validators
 
+# Global signal handling - prevent accidental exits
+# Individual functions will override this with their own trap handlers
+trap '' INT
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -482,8 +486,8 @@ view_api_logs() {
     echo -e "${CYAN}════════════════════════════════════════════════════════════════${NC}"
     echo ""
     
-    trap 'echo -e "\n${GREEN}Returning to menu...${NC}"; sleep 1; return' INT
-    pm2 logs tachyon-api --lines 100
+    trap 'echo -e "\n${GREEN}Returning to menu...${NC}"; sleep 1; trap - INT; return' INT
+    pm2 logs tachyon-api --lines 100 || true
     trap - INT
 }
 
@@ -945,34 +949,38 @@ monitoring() {
 
 view_relayer_logs() {
     echo -e "\n${YELLOW}Relayer Logs (Ctrl+C to return to menu)${NC}\n"
+    
+    # Trap Ctrl+C to prevent exiting the script
+    trap 'echo -e "\n${GREEN}Returning to menu...${NC}"; sleep 1; trap - INT; return' INT
+    
     if command -v pm2 &> /dev/null && pm2 list | grep -q "tachyon-relayer"; then
-        # pm2 logs handles Ctrl+C gracefully
-        pm2 logs tachyon-relayer --lines 50
+        pm2 logs tachyon-relayer --lines 50 || true
     elif [ -f "$LOGS_DIR/relayer.log" ]; then
-        # Trap Ctrl+C to prevent exiting the script
-        trap 'echo -e "\n${GREEN}Returning to menu...${NC}"; sleep 1; return' INT
-        tail -f "$LOGS_DIR/relayer.log"
-        trap - INT  # Reset trap
+        tail -f "$LOGS_DIR/relayer.log" || true
     else
         echo -e "${RED}No logs found. Is the relayer running?${NC}"
         sleep 3
     fi
+    
+    trap - INT  # Reset trap
 }
 
 view_signer_logs() {
     echo -e "\n${YELLOW}Signer Logs (Ctrl+C to return to menu)${NC}\n"
+    
+    # Trap Ctrl+C to prevent exiting the script
+    trap 'echo -e "\n${GREEN}Returning to menu...${NC}"; sleep 1; trap - INT; return' INT
+    
     if command -v pm2 &> /dev/null && pm2 list | grep -q "tachyon-signer"; then
-        # pm2 logs handles Ctrl+C gracefully
-        pm2 logs tachyon-signer --lines 50
+        pm2 logs tachyon-signer --lines 50 || true
     elif [ -f "$LOGS_DIR/signer.log" ]; then
-        # Trap Ctrl+C to prevent exiting the script
-        trap 'echo -e "\n${GREEN}Returning to menu...${NC}"; sleep 1; return' INT
-        tail -f "$LOGS_DIR/signer.log"
-        trap - INT  # Reset trap
+        tail -f "$LOGS_DIR/signer.log" || true
     else
         echo -e "${RED}No logs found. Is the signer running?${NC}"
         sleep 3
     fi
+    
+    trap - INT  # Reset trap
 }
 
 view_transactions() {
@@ -1512,8 +1520,9 @@ configure_healthcheck() {
 view_autopilot_logs() {
     echo -e "\n${YELLOW}Showing autopilot logs (Ctrl+C to return to menu)...${NC}\n"
     sleep 2
+    
     # Trap Ctrl+C to prevent exiting the script
-    trap 'echo -e "\n${GREEN}Returning to menu...${NC}"; sleep 1; return' INT
+    trap 'echo -e "\n${GREEN}Returning to menu...${NC}"; sleep 1; trap - INT; return' INT
     tail -f "$CONSOLE_DIR/logs/autopilot.log" 2>/dev/null || echo "No logs yet"
     trap - INT  # Reset trap
 }
@@ -2004,8 +2013,19 @@ EOF
     read -p "Press Enter to return to main menu..."
 }
 
+# Handle Ctrl+C in main menu - ask for confirmation
+handle_main_interrupt() {
+    echo ""
+    echo -e "${YELLOW}Press Ctrl+C again to exit, or any key to continue...${NC}"
+    read -n 1 -t 3 || exit 0
+    echo ""
+}
+
 # Main loop
 main() {
+    # Enable Ctrl+C handling in main menu
+    trap 'handle_main_interrupt' INT
+    
     while true; do
         print_header
         print_status
