@@ -354,8 +354,8 @@ view_service_status() {
         echo -e "  Relayer:  ${GREEN}Running${NC} (PID: $PID)"
         
         # Check if responding
-        if curl -s http://localhost:3000/health > /dev/null 2>&1; then
-            echo -e "            ${GREEN}✓ Responding on port 3000${NC}"
+        if curl -s http://localhost:7777/health > /dev/null 2>&1; then
+            echo -e "            ${GREEN}✓ Responding on port 7777${NC}"
         else
             echo -e "            ${RED}✗ Not responding${NC}"
         fi
@@ -871,7 +871,7 @@ check_live_prices() {
     echo -e "  ${BOLD}${WHITE}LIVE PRICE FEEDS${NC}"
     echo ""
     
-    if curl -s http://localhost:3000/health > /dev/null 2>&1; then
+    if curl -s http://localhost:7777/health > /dev/null 2>&1; then
         echo -e "  ${GREEN}✓ Relayer is running${NC}"
         echo ""
         echo -e "  ${YELLOW}Fetching live prices...${NC}"
@@ -883,7 +883,7 @@ check_live_prices() {
         
         async function fetchPrices() {
             try {
-                const response = await fetch('http://localhost:3000/feeds');
+                const response = await fetch('http://localhost:7777/feeds');
                 const data = await response.json();
                 
                 if (data && data.feeds) {
@@ -902,7 +902,7 @@ check_live_prices() {
         }
         
         fetchPrices();
-        " 2>/dev/null || curl -s http://localhost:3000/feeds | head -20
+        " 2>/dev/null || curl -s http://localhost:7777/feeds | head -20
         
     else
         echo -e "  ${RED}✗ Relayer not running${NC}"
@@ -1454,7 +1454,7 @@ while true; do
     fi
     
     # Check relayer health
-    if ! curl -s http://localhost:3000/health > /dev/null 2>&1; then
+    if ! curl -s http://localhost:7777/health > /dev/null 2>&1; then
         log "Relayer health check failed, restarting..."
         pkill -f "relayer/dist/index.js"
         sleep 2
@@ -1626,7 +1626,7 @@ run_diagnostics() {
         echo -e "  X1 RPC: ${RED}✗ Failed${NC}"
     fi
     
-    if curl -s http://localhost:3000/health > /dev/null 2>&1; then
+    if curl -s http://localhost:7777/health > /dev/null 2>&1; then
         echo -e "  Relayer API: ${GREEN}✓ Responding${NC}"
     else
         echo -e "  Relayer API: ${RED}✗ Not responding${NC}"
