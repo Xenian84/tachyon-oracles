@@ -985,12 +985,14 @@ view_signer_logs() {
 
 view_transactions() {
     echo -e "\n${YELLOW}Recent Transactions${NC}\n"
-    # Use detected paths
-    DEPLOYER_KEY="${RELAYER_KEYPAIR:-$SOLANA_CONFIG_DIR/deployer.json}"
-    if [ -f "$DEPLOYER_KEY" ]; then
-        solana transaction-history "$DEPLOYER_KEY" --url "$SOLANA_RPC_URL" | head -20
+    # Use relayer keypair for transaction history
+    RELAYER_KEY="$KEYS_DIR/relayer.json"
+    if [ -f "$RELAYER_KEY" ]; then
+        echo -e "${CYAN}Showing transactions for relayer wallet...${NC}\n"
+        solana transaction-history "$RELAYER_KEY" --url "$SOLANA_RPC_URL" | head -20
     else
-        echo -e "${RED}Deployer keypair not found at: $DEPLOYER_KEY${NC}"
+        echo -e "${RED}Relayer keypair not found at: $RELAYER_KEY${NC}"
+        echo -e "${YELLOW}Run the First Time Setup wizard to create keypairs${NC}"
     fi
     echo ""
     read -p "Press Enter to continue..."
@@ -1002,27 +1004,24 @@ check_balances() {
     echo -e "${CYAN}║${NC}  ${BOLD}${WHITE}WALLET BALANCES${NC}"
     echo -e "${CYAN}║${NC}"
     
-    # Relayer
-    DEPLOYER_KEY="${RELAYER_KEYPAIR:-$SOLANA_CONFIG_DIR/deployer.json}"
-    if [ -f "$DEPLOYER_KEY" ]; then
-        ADDR=$(solana-keygen pubkey "$DEPLOYER_KEY" 2>/dev/null)
-        BAL=$(solana balance "$ADDR" --url "$SOLANA_RPC_URL" 2>/dev/null || echo "0")
-        echo -e "${CYAN}║${NC}  Relayer:    $BAL"
-    fi
-    
-    # Signer - check all keys in keys directory
-    if [ -d "$KEYS_DIR" ]; then
+    # Check all keys in keys directory
+    if [ -d "$KEYS_DIR" ] && [ "$(ls -A $KEYS_DIR/*.json 2>/dev/null)" ]; then
         for keyfile in "$KEYS_DIR"/*.json; do
             if [ -f "$keyfile" ]; then
-                KEYNAME=$(basename "$keyfile")
+                KEYNAME=$(basename "$keyfile" .json)
                 ADDR=$(solana-keygen pubkey "$keyfile" 2>/dev/null)
-                BAL=$(solana balance "$ADDR" --url "$SOLANA_RPC_URL" 2>/dev/null || echo "0")
-                echo -e "${CYAN}║${NC}  $KEYNAME:    $BAL"
+                BAL=$(solana balance "$ADDR" --url "$SOLANA_RPC_URL" 2>/dev/null || echo "0 XNT")
+                echo -e "${CYAN}║${NC}  ${KEYNAME}:    ${GREEN}${BAL}${NC}"
+                echo -e "${CYAN}║${NC}  ${KEYNAME} address: ${YELLOW}${ADDR}${NC}"
+                echo -e "${CYAN}║${NC}"
             fi
         done
+    else
+        echo -e "${CYAN}║${NC}  ${RED}No keypairs found${NC}"
+        echo -e "${CYAN}║${NC}  ${YELLOW}Run the First Time Setup wizard to create keypairs${NC}"
+        echo -e "${CYAN}║${NC}"
     fi
     
-    echo -e "${CYAN}║${NC}"
     echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     read -p "Press Enter to continue..."
@@ -1128,9 +1127,8 @@ view_config() {
     
     echo ""
     echo -e "${BOLD}Keypairs:${NC}"
-    DEPLOYER_KEY="${RELAYER_KEYPAIR:-$SOLANA_CONFIG_DIR/deployer.json}"
-    if [ -f "$DEPLOYER_KEY" ]; then
-        echo -e "  Relayer:            ${GREEN}✓${NC} $DEPLOYER_KEY"
+    if [ -f "$KEYS_DIR/relayer.json" ]; then
+        echo -e "  Relayer:            ${GREEN}✓${NC} $KEYS_DIR/relayer.json"
     else
         echo -e "  Relayer:            ${RED}✗${NC} Not found"
     fi
@@ -1252,10 +1250,15 @@ view_all_wallets() {
     fi
     
     echo ""
-    echo -e "${BOLD}Config Wallets:${NC}"
-    if [ -f "$SOLANA_CONFIG_DIR/deployer.json" ]; then
-        PUBKEY=$(solana-keygen pubkey "$SOLANA_CONFIG_DIR/deployer.json" 2>/dev/null || echo "Error")
-        echo -e "  ${GREEN}•${NC} deployer.json"
+    echo -e "${BOLD}Oracle Keypairs:${NC}"
+    if [ -f "$KEYS_DIR/signer.json" ]; then
+        PUBKEY=$(solana-keygen pubkey "$KEYS_DIR/signer.json" 2>/dev/null || echo "Error")
+        echo -e "  ${GREEN}•${NC} signer.json (signs price data)"
+        echo -e "    ${CYAN}$PUBKEY${NC}"
+    fi
+    if [ -f "$KEYS_DIR/relayer.json" ]; then
+        PUBKEY=$(solana-keygen pubkey "$KEYS_DIR/relayer.json" 2>/dev/null || echo "Error")
+        echo -e "  ${GREEN}•${NC} relayer.json (submits transactions)"
         echo -e "    ${CYAN}$PUBKEY${NC}"
     fi
     
@@ -1277,11 +1280,9 @@ backup_wallets() {
     echo -e "\n${YELLOW}Creating wallet backup...${NC}"
     mkdir -p "$BACKUP_DIR"
     
-    # Backup keys directory and config wallets
+    # Backup keys directory
     BACKUP_ITEMS=""
     [ -d "$KEYS_DIR" ] && BACKUP_ITEMS="$BACKUP_ITEMS $KEYS_DIR"
-    [ -f "$SOLANA_CONFIG_DIR/deployer.json" ] && BACKUP_ITEMS="$BACKUP_ITEMS $SOLANA_CONFIG_DIR/deployer.json"
-    [ -f "$SOLANA_CONFIG_DIR/identity.json" ] && BACKUP_ITEMS="$BACKUP_ITEMS $SOLANA_CONFIG_DIR/identity.json"
     
     if [ -n "$BACKUP_ITEMS" ]; then
         tar -czf "$BACKUP_FILE" $BACKUP_ITEMS 2>/dev/null
