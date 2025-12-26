@@ -1564,8 +1564,19 @@ update_oracles() {
     
     # Rebuild services
     echo -e "\n${YELLOW}Rebuilding services...${NC}"
+    
+    # Build SDK first
+    echo -e "  ${WHITE}Building SDK...${NC}"
+    cd sdk && npm install && npx tsc
+    cd ..
+    
+    # Build services
+    echo -e "  ${WHITE}Building relayer...${NC}"
     cd relayer && npm install && npx tsc
-    cd ../signer && npm install && npx tsc
+    cd ..
+    
+    echo -e "  ${WHITE}Building signer...${NC}"
+    cd signer && npm install && npx tsc
     cd ..
     
     echo -e "\n${GREEN}✓ Update complete. Restart services to apply changes.${NC}"
@@ -1793,9 +1804,20 @@ EOF
     cd "$CONSOLE_DIR"
     npm install > /dev/null 2>&1 || true
     
-    cd relayer && npm install > /dev/null 2>&1 && npm run build > /dev/null 2>&1 || true
-    cd ../signer && npm install > /dev/null 2>&1 && npm run build > /dev/null 2>&1 || true
+    # Build SDK first (required by other services)
+    echo -e "  ${WHITE}Building SDK...${NC}"
+    cd sdk && npm install > /dev/null 2>&1 && npm run build > /dev/null 2>&1 || true
     cd ..
+    
+    # Build services
+    echo -e "  ${WHITE}Building relayer...${NC}"
+    cd relayer && npm install > /dev/null 2>&1 && npm run build > /dev/null 2>&1 || true
+    cd ..
+    
+    echo -e "  ${WHITE}Building signer...${NC}"
+    cd signer && npm install > /dev/null 2>&1 && npm run build > /dev/null 2>&1 || true
+    cd ..
+    
     echo -e "${GREEN}✓ Services built${NC}"
     
     # Step 6: Register publisher

@@ -17,45 +17,39 @@ import {
 } from './utils';
 
 /**
- * Borsh schema for ConfigAccount
+ * Layout for ConfigAccount using buffer-layout
  */
-const configAccountSchema: any = {
-  struct: {
-    admin: { array: { type: 'u8', len: 32 } },
-    updateFeeLamports: 'u64',
-    relayerCutBps: 'u16',
-    minPublishers: 'u8',
-    maxAgeSec: 'u32',
-    assetCount: 'u16',
-    bump: 'u8',
-  },
-};
+const configAccountLayout = borsh.struct([
+  borsh.publicKey('admin'),
+  borsh.u64('updateFeeLamports'),
+  borsh.u16('relayerCutBps'),
+  borsh.u8('minPublishers'),
+  borsh.u32('maxAgeSec'),
+  borsh.u16('assetCount'),
+  borsh.u8('bump'),
+]);
 
 /**
- * Borsh schema for PublisherAccount
+ * Layout for PublisherAccount
  */
-const publisherAccountSchema: any = {
-  struct: {
-    publisher: { array: { type: 'u8', len: 32 } },
-    stakedAmount: 'u64',
-    isActive: 'u8',
-    bump: 'u8',
-  },
-};
+const publisherAccountLayout = borsh.struct([
+  borsh.publicKey('publisher'),
+  borsh.u64('stakedAmount'),
+  borsh.bool('isActive'),
+  borsh.u8('bump'),
+]);
 
 /**
- * Borsh schema for PriceFeedAccount
+ * Layout for PriceFeedAccount
  */
-const priceFeedAccountSchema: any = {
-  struct: {
-    assetId: { array: { type: 'u8', len: 32 } },
-    priceI64: 'i64',
-    confI64: 'i64',
-    publishTime: 'i64',
-    lastUpdateSlot: 'u64',
-    bump: 'u8',
-  },
-};
+const priceFeedAccountLayout = borsh.struct([
+  borsh.array(borsh.u8(), 32, 'assetId'),
+  borsh.i64('priceI64'),
+  borsh.i64('confI64'),
+  borsh.i64('publishTime'),
+  borsh.u64('lastUpdateSlot'),
+  borsh.u8('bump'),
+]);
 
 /**
  * Fetch and decode the config account
@@ -72,7 +66,7 @@ export async function fetchConfig(
   
   // Skip 8-byte discriminator
   const data = accountInfo.data.slice(8);
-  const decoded: any = borsh.deserialize(configAccountSchema, data);
+  const decoded = configAccountLayout.decode(Buffer.from(data));
   
   return {
     admin: new PublicKey(decoded.admin).toBase58(),
@@ -100,7 +94,7 @@ export async function fetchPublisher(
   
   // Skip 8-byte discriminator
   const data = accountInfo.data.slice(8);
-  const decoded: any = borsh.deserialize(publisherAccountSchema, data);
+  const decoded = publisherAccountLayout.decode(Buffer.from(data));
   
   return {
     publisher: new PublicKey(decoded.publisher),
@@ -126,7 +120,7 @@ export async function fetchPriceFeed(
   
   // Skip 8-byte discriminator
   const data = accountInfo.data.slice(8);
-  const decoded: any = borsh.deserialize(priceFeedAccountSchema, data);
+  const decoded = priceFeedAccountLayout.decode(Buffer.from(data));
   
   const publishTime = new BN(decoded.publishTime);
   
@@ -156,7 +150,7 @@ export async function fetchPriceFeedRaw(
   
   // Skip 8-byte discriminator
   const data = accountInfo.data.slice(8);
-  const decoded: any = borsh.deserialize(priceFeedAccountSchema, data);
+  const decoded = priceFeedAccountLayout.decode(Buffer.from(data));
   
   return {
     assetId: Buffer.from(decoded.assetId),
