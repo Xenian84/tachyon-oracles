@@ -1743,27 +1743,50 @@ quick_start() {
     fi
     echo -e "${GREEN}✓ PM2 installed${NC}"
     
-    # Step 2: Create keypair
-    echo -e "\n${CYAN}[2/7]${NC} ${YELLOW}Setting up validator keypair...${NC}"
+    # Step 2: Create keypairs
+    echo -e "\n${CYAN}[2/7]${NC} ${YELLOW}Setting up oracle keypairs...${NC}"
+    echo -e "${WHITE}These are separate from your validator keys${NC}"
     mkdir -p "$KEYS_DIR"
     
-    if [ ! -f "$KEYS_DIR/validator-signer.json" ]; then
-        echo -e "${YELLOW}Creating new validator keypair...${NC}"
+    # Create signer keypair (for signing price data)
+    if [ ! -f "$KEYS_DIR/signer.json" ]; then
+        echo -e "\n${YELLOW}Creating oracle signer keypair...${NC}"
+        echo -e "${CYAN}This key signs price data (must be registered as publisher)${NC}"
         echo -e "${RED}⚠️  IMPORTANT: Save your seed phrase!${NC}"
         sleep 2
-        solana-keygen new --outfile "$KEYS_DIR/validator-signer.json"
-        PUBKEY=$(solana-keygen pubkey "$KEYS_DIR/validator-signer.json")
-        echo -e "\n${GREEN}✓ Keypair created${NC}"
-        echo -e "${CYAN}Your validator address: ${YELLOW}${PUBKEY}${NC}"
+        solana-keygen new --outfile "$KEYS_DIR/signer.json"
+        SIGNER_PUBKEY=$(solana-keygen pubkey "$KEYS_DIR/signer.json")
+        echo -e "\n${GREEN}✓ Signer keypair created${NC}"
+        echo -e "${CYAN}Signer address: ${YELLOW}${SIGNER_PUBKEY}${NC}"
     else
-        PUBKEY=$(solana-keygen pubkey "$KEYS_DIR/validator-signer.json")
-        echo -e "${GREEN}✓ Keypair already exists${NC}"
-        echo -e "${CYAN}Your validator address: ${YELLOW}${PUBKEY}${NC}"
+        SIGNER_PUBKEY=$(solana-keygen pubkey "$KEYS_DIR/signer.json")
+        echo -e "${GREEN}✓ Signer keypair already exists${NC}"
+        echo -e "${CYAN}Signer address: ${YELLOW}${SIGNER_PUBKEY}${NC}"
     fi
     
-    # Step 3: Check balance
-    echo -e "\n${CYAN}[3/7]${NC} ${YELLOW}Checking balance...${NC}"
-    BALANCE=$(solana balance "$KEYS_DIR/validator-signer.json" --url "$SOLANA_RPC_URL" 2>/dev/null | awk '{print $1}')
+    # Create relayer keypair (for submitting transactions)
+    if [ ! -f "$KEYS_DIR/relayer.json" ]; then
+        echo -e "\n${YELLOW}Creating oracle relayer keypair...${NC}"
+        echo -e "${CYAN}This key submits transactions (needs SOL for fees)${NC}"
+        solana-keygen new --outfile "$KEYS_DIR/relayer.json" --no-bip39-passphrase
+        RELAYER_PUBKEY=$(solana-keygen pubkey "$KEYS_DIR/relayer.json")
+        echo -e "${GREEN}✓ Relayer keypair created${NC}"
+        echo -e "${CYAN}Relayer address: ${YELLOW}${RELAYER_PUBKEY}${NC}"
+    else
+        RELAYER_PUBKEY=$(solana-keygen pubkey "$KEYS_DIR/relayer.json")
+        echo -e "${GREEN}✓ Relayer keypair already exists${NC}"
+        echo -e "${CYAN}Relayer address: ${YELLOW}${RELAYER_PUBKEY}${NC}"
+    fi
+    
+    # Step 3: Check balances
+    echo -e "\n${CYAN}[3/7]${NC} ${YELLOW}Checking balances...${NC}"
+    SIGNER_BALANCE=$(solana balance "$KEYS_DIR/signer.json" --url "$SOLANA_RPC_URL" 2>/dev/null | awk '{print $1}')
+    RELAYER_BALANCE=$(solana balance "$KEYS_DIR/relayer.json" --url "$SOLANA_RPC_URL" 2>/dev/null | awk '{print $1}')
+    
+    echo -e "${CYAN}Signer balance:  ${YELLOW}${SIGNER_BALANCE} XNT${NC}"
+    echo -e "${CYAN}Relayer balance: ${YELLOW}${RELAYER_BALANCE} XNT${NC}"
+    
+    BALANCE=$SIGNER_BALANCE
     echo -e "${CYAN}Balance: ${YELLOW}${BALANCE} XNT${NC}"
     
     if (( $(echo "$BALANCE < 0.1" | bc -l 2>/dev/null || echo "1") )); then
@@ -1780,8 +1803,9 @@ quick_start() {
     echo -e "\n${CYAN}[4/7]${NC} ${YELLOW}Configuring environment...${NC}"
     if [ ! -f "$CONSOLE_DIR/.env" ]; then
         cat > "$CONSOLE_DIR/.env" << EOF
-# Validator Configuration
-VALIDATOR_KEYPAIR=./keys/validator-signer.json
+# Keypair Configuration
+SIGNER_KEYPAIR=./keys/signer.json
+RELAYER_KEYPAIR=./keys/relayer.json
 
 # Relayer Settings
 RELAYER_PORT=7777
