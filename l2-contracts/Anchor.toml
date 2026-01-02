@@ -1,0 +1,24 @@
+[toolchain]
+package_manager = "yarn"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+tachyon_state_compression = "L2TA7eVsDyXx7nxF4p2Xay3iWgdCHuMPx6YV5odwMTx"
+tachyon_l2_core = "CXREjmHFdCBNZe7x1fLLam7VMph2A6uRRroaNUpzEwG3"
+tachyon_verifier = "VRFYGHjfBedWbwTBw8DhmoUYa6s3Ga5ybJUPny7buAR"
+tachyon_bridge = "BRDGK2ASP86oe5wj18XYwRBuhEELpEGFqZGBhxnwwnTW"
+tachyon_sequencer = "SEQRXNAYH7s4DceD8K3Bb7oChunLVYqZKRcCJGRoQ1M"
+tachyon_governance = "TACHdFYQ4uDuAdo6Hz4V1RaCezEpHkVRZGQ7yh24Ad9"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "https://rpc.mainnet.x1.xyz"
+wallet = "/root/.config/tachyon/deployer.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 \"tests/**/*.ts\""

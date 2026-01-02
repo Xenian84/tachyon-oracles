@@ -1,0 +1,31 @@
+[Unit]
+Description=Tachyon Oracle Node
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tachyon
+Group=tachyon
+WorkingDirectory=/opt/tachyon
+ExecStart=/usr/local/bin/tachyon-node start --config /etc/tachyon/node-config.toml
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tachyon-node
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/tachyon /var/log/tachyon
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+
