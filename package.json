@@ -1,0 +1,27 @@
+{
+  "name": "tachyon-oracle-node",
+  "version": "1.0.0",
+  "description": "Tachyon Oracle Network - Decentralized Price Feeds for X1",
+  "main": "stake-simple.js",
+  "scripts": {
+    "stake": "node stake-simple.js"
+  },
+  "keywords": [
+    "oracle",
+    "blockchain",
+    "solana",
+    "x1",
+    "price-feeds",
+    "defi"
+  ],
+  "author": "Tachyon Team",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@solana/web3.js": "^1.95.8"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
+

@@ -12,6 +12,7 @@ tachyon_verifier = "VRFYGHjfBedWbwTBw8DhmoUYa6s3Ga5ybJUPny7buAR"
 tachyon_bridge = "BRDGK2ASP86oe5wj18XYwRBuhEELpEGFqZGBhxnwwnTW"
 tachyon_sequencer = "SEQRXNAYH7s4DceD8K3Bb7oChunLVYqZKRcCJGRoQ1M"
 tachyon_governance = "TACHdFYQ4uDuAdo6Hz4V1RaCezEpHkVRZGQ7yh24Ad9"
+tachyon_price_feeds = "PFEDu3nNzRQQYmX1Xvso2BxtPbUQaZEVoiLbXDy6U3W"
 
 [registry]
 url = "https://api.apr.dev"

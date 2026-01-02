@@ -14,6 +14,7 @@ mod gossip;
 mod api;
 mod crypto;
 mod metrics;
+mod price_feeds;
 
 // Solana components adapted for production-grade oracle network
 // These modules contain infrastructure code that will be used in future features

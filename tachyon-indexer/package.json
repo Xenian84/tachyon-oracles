@@ -1,0 +1,26 @@
+{
+  "name": "tachyon-indexer",
+  "version": "1.0.0",
+  "description": "Historical data indexer for Tachyon Oracle Network",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "db:migrate": "node src/db/migrate.js",
+    "db:seed": "node src/db/seed.js"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.87.6",
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "ws": "^8.16.0",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
+

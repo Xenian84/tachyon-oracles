@@ -38,12 +38,30 @@ pub async fn start_sequencer(
                 
                 info!("🚀 Submitting Merkle root to X1: {}", &result.batch.root[..8]);
                 
+                // Submit Merkle root
                 match submit_to_chain(&rpc_client, &config, &program_id, &result).await {
                     Ok(signature) => {
-                        info!("✅ Submitted successfully! Tx: {}", signature);
+                        info!("✅ Merkle root submitted! Tx: {}", signature);
                     }
                     Err(e) => {
-                        error!("❌ Failed to submit to chain: {}", e);
+                        error!("❌ Failed to submit Merkle root: {}", e);
+                    }
+                }
+                
+                // Also submit individual price feeds
+                info!("📊 Submitting price feeds...");
+                match crate::price_feeds::submit_price_feeds(
+                    &rpc_client,
+                    &config.identity,
+                    &result.batch.feeds
+                ).await {
+                    Ok(sigs) => {
+                        if !sigs.is_empty() {
+                            info!("✅ Submitted {} price feeds", sigs.len());
+                        }
+                    }
+                    Err(e) => {
+                        error!("❌ Failed to submit price feeds: {}", e);
                     }
                 }
             }

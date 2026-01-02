@@ -1,422 +1,415 @@
-# 🚀 Tachyon Oracle Node
+# 🚀 Tachyon Oracle Network
 
-A high-performance oracle node implementation in Rust for the X1 blockchain, providing decentralized price feeds with L2 state compression.
+**Decentralized Price Feeds for the X1 Blockchain**
 
-[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
-[![X1 Blockchain](https://img.shields.io/badge/X1-Blockchain-blue.svg)](https://x1.xyz)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![Solana](https://img.shields.io/badge/solana-1.18%2B-blue.svg)](https://solana.com/)
 
-## 📋 Overview
+Tachyon is a high-performance oracle network that provides real-time, decentralized price feeds for the X1 blockchain ecosystem. Built with Rust and powered by stake-weighted consensus, Tachyon ensures accurate and reliable data for DeFi applications.
 
-Tachyon Oracle Node is a Rust-based oracle implementation that:
-- 🔄 Fetches real-time price data from multiple exchanges
-- 🔐 Implements stake-weighted consensus for data validation
-- 📦 Submits batched price feeds to X1 blockchain via L2 compression
-- ⚡ Achieves high throughput with minimal on-chain footprint
-- 🎯 Provides governance and staking mechanisms
+---
 
 ## ✨ Features
 
-- **Stake-Weighted Consensus**: Leader selection based on staked TACH tokens
-- **L2 State Compression**: Efficient batch submission using Merkle trees
-- **Multi-Exchange Support**: Aggregates data from Binance, Coinbase, and more
-- **Governance System**: On-chain voting and proposal mechanisms
-- **Performance Tracking**: Built-in metrics for uptime and accuracy
-- **Rewards System**: Earn rewards for accurate price submissions
-- **Easy Setup**: Automated installation script and comprehensive guide
+- 🔄 **Real-Time Price Feeds** - Updates every 10 seconds from multiple exchanges
+- 🔐 **Stake-Weighted Consensus** - Validators stake TACH tokens for network security
+- 🌳 **Merkle Tree Compression** - Efficient on-chain data storage
+- 📊 **Multiple Data Sources** - Aggregates from Coinbase, Kraken, and more
+- ⚡ **Low Latency** - Sub-second price updates
+- 🎯 **High Accuracy** - Confidence intervals and outlier detection
+- 🔌 **Easy Integration** - Simple API for DeFi protocols
+
+---
+
+## 🚀 Quick Start (One-Click Install)
+
+**For validators who want to run a node:**
+
+```bash
+curl -sSL https://raw.githubusercontent.com/xenian84/tachyon-oracles/main/install.sh | bash
+```
+
+That's it! The script will:
+- ✅ Install all dependencies (Rust, Solana CLI, etc.)
+- ✅ Build the node from source
+- ✅ Generate a keypair
+- ✅ Create configuration files
+- ✅ Set up systemd service
+- ✅ Start the node
+
+**Total time: ~10 minutes** ⏱️
+
+---
+
+## 📋 Requirements
+
+### Minimum:
+- **OS:** Ubuntu 20.04+ or Debian 11+
+- **CPU:** 2 cores
+- **RAM:** 4 GB
+- **Disk:** 20 GB SSD
+- **Network:** 10 Mbps up/down
+
+### Recommended:
+- **OS:** Ubuntu 22.04 LTS
+- **CPU:** 4+ cores
+- **RAM:** 8+ GB
+- **Disk:** 50+ GB NVMe SSD
+- **Network:** 100+ Mbps up/down
+
+### Tokens:
+- **Stake:** 100,000+ TACH (minimum to participate)
+- **Fees:** 0.1+ XNT (for transaction fees)
+
+---
 
 ## 🏗️ Architecture
 
 ```
-╔═══════════════════════════════════════════════════════════════════╗
-║                  🚀 Tachyon Oracle Node (Rust)                    ║
-╠═══════════════════════════════════════════════════════════════════╣
-║                                                                   ║
-║    ┌─────────────────┐      ┌─────────────────┐                   ║
-║    │   📊 CONSENSUS         │  📦 SEQUENCER  │                   ║ 
-║    │                 │      │                 │                   ║
-║    │  Stake-Weighted │──────▶  Batch Price                       ║
-║    │  Leader Select  │      │   Submissions   │                   ║
-║    └─────────────────┘      └─────────────────┘                   ║
-║            │                         │                            ║
-║            │                         │                            ║
-║            │                         ▼                            ║
-║            │              ┌─────────────────┐                     ║
-║            │              │ 🔗L2 CONTRACT  │                      
-║            │              │                 │                     ║
-║            │              │  Merkle Root    │                     ║
-║            │              │    Storage      │                     ║
-║            │              └─────────────────┘                     ║
-║            │                         │                            ║
-║            └─────────────────────────┘                            ║
-║                          │                                        ║
-║                          ▼                                        ║
-║              ┌───────────────────────┐                            ║
-║                ⚖️  GOVERNANCE                                    ║
-║              │                       │                            ║
-║              │  • Staking System     │                            ║
-║              │  • Rewards Pool       │                            ║
-║              │  • DAO Voting         │                            ║
-║              │  • Performance Track  │                            ║
-║              └───────────────────────┘                            ║
-║                                                                   ║
-╚═══════════════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════════╗
+║                     TACHYON ORACLE NETWORK                       ║
+╚══════════════════════════════════════════════════════════════════╝
 
-Flow:
-  1. Consensus module selects leader based on stake weight
-  2. Sequencer batches price feeds from multiple exchanges
-  3. Leader submits Merkle root to L2 Contract
-  4. Governance tracks performance and distributes rewards
+    📊 Exchanges                    🌐 Oracle Nodes
+    ┌─────────────┐                ┌──────────────┐
+    │  Coinbase   │───────────────▶│   Node 1     │
+    │   Kraken    │                │   Node 2     │
+    │  Binance    │                │   Node 3     │
+    └─────────────┘                │     ...      │
+         │                         └──────┬───────┘
+         │                                │
+         │  Fetch Prices                  │  Aggregate
+         │  Every 10s                     │  & Consensus
+         │                                │
+         ▼                                ▼
+    ┌─────────────────────────────────────────────┐
+    │          Local Aggregation                  │
+    │   • Median calculation                      │
+    │   • Confidence intervals                    │
+    │   • Outlier detection                       │
+    └─────────────────┬───────────────────────────┘
+                      │
+                      │  Submit Every 60s
+                      │
+         ┌────────────┴────────────┐
+         │                         │
+         ▼                         ▼
+    ┌─────────────┐         ┌─────────────┐
+    │  L2 State   │         │ Price Feeds │
+    │ Compression │         │  Contract   │
+    │             │         │             │
+    │ Merkle Root │         │ Individual  │
+    │  Storage    │         │   Prices    │
+    └──────┬──────┘         └──────┬──────┘
+           │                       │
+           └───────────┬───────────┘
+                       │
+                       ▼
+              ┌────────────────┐
+              │  X1 Blockchain │
+              │ (Solana-based) │
+              └────────┬───────┘
+                       │
+                       ▼
+              ┌────────────────┐
+              │  DeFi Protocols│
+              │   • DEXs       │
+              │   • Lending    │
+              │   • Derivatives│
+              └────────────────┘
 ```
 
-## 🚀 Quick Start
+---
 
-### Prerequisites
+## 📦 What's Included
 
-- **Rust** 1.70 or higher
-- **Solana CLI** (for X1 blockchain)
-- **Node.js** 16+ (for setup scripts)
-- **100,000+ TACH tokens** for staking
-- **~0.1 XNT** for transaction fees
+### 1. **Oracle Node** (`tachyon-node/`)
+Rust-based oracle node that:
+- Fetches prices from exchanges
+- Aggregates data locally
+- Participates in consensus
+- Submits to blockchain
 
-### Installation
+### 2. **Console** (`tachyon-console.sh`)
+User-friendly management interface:
+- Start/stop/restart node
+- View logs and status
+- Manage stake
+- Check performance
+- View rewards
+
+### 3. **Smart Contracts** (Referenced, not deployed by nodes)
+- **Governance:** Staking and validator management
+- **L2 State Compression:** Merkle root storage
+- **Price Feeds:** Individual price storage
+
+---
+
+## 🎮 Managing Your Node
+
+After installation, use the console:
 
 ```bash
-# Clone the repository
+tachyon-console
+```
+
+You'll see a menu like this:
+
+```
+╔════════════════════════════════════════════════════════════╗
+║           🚀 TACHYON ORACLE NODE CONSOLE 🚀               ║
+╚════════════════════════════════════════════════════════════╝
+
+[1] 🎮 Node Control
+[2] 📊 View Logs
+[3] 💰 Stake Management
+[4] 📈 Performance Metrics
+[5] 🎁 Rewards
+[6] 💼 Wallet Info
+[7] 🌐 Network Status
+[8] ⚙️  Configuration
+[9] ❌ Exit
+
+Choose an option:
+```
+
+---
+
+## 🔧 Manual Installation (Advanced)
+
+If you prefer to install manually:
+
+### 1. Install Dependencies
+
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Install build tools
+sudo apt install -y curl git build-essential pkg-config libssl-dev
+
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+
+# Install Solana CLI
+sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+```
+
+### 2. Clone Repository
+
+```bash
 git clone https://github.com/xenian84/tachyon-oracles.git
 cd tachyon-oracles
-
-# Run the automated setup script
-bash setup-new-node.sh
 ```
 
-The setup script will:
-1. ✅ Create a new keypair for your node
-2. ✅ Build the Rust node binary
-3. ✅ Create configuration files
-4. ✅ Stake your TACH tokens
-5. ✅ Set up systemd service
-6. ✅ Start the node
-
-### Manual Setup
-
-For detailed manual setup instructions, see [NEW_NODE_SETUP.md](NEW_NODE_SETUP.md).
-
-## 📊 Minimum Requirements
-
-| Requirement | Amount |
-|------------|--------|
-| **TACH Stake** | 100,000 TACH (minimum) |
-| **XNT Balance** | 0.1 XNT (for fees) |
-| **RAM** | 2GB minimum |
-| **Disk** | 10GB available |
-| **Network** | Stable internet connection |
-
-## 🔧 Configuration
-
-### Node Configuration
-
-Edit `/etc/tachyon-node/node-config.toml`:
-
-```toml
-keypair_path = "/var/lib/tachyon/node-keypair.json"
-rpc_url = "https://rpc.mainnet.x1.xyz"
-program_id = "TACHdFYQ4uDuAdo6Hz4V1RaCezEpHkVRZGQ7yh24Ad9"
-l2_program_id = "L2TA7eVsDyXx7nxF4p2Xay3iWgdCHuMPx6YV5odwMTx"
-gossip_port = 9000
-api_port = 7777
-update_interval_ms = 1000
-batch_interval_ms = 100
-min_publishers = 3
-
-[[assets]]
-symbol = "BTC/USD"
-exchanges = ["binance", "coinbase"]
-
-[[assets]]
-symbol = "ETH/USD"
-exchanges = ["binance", "coinbase"]
-
-# Add more assets as needed
-```
-
-## 📝 Usage
-
-### 🎮 Interactive Console (Recommended)
-
-The easiest way to manage your node is using the interactive console:
+### 3. Build Node
 
 ```bash
-# Run the console
-sudo bash tachyon-console.sh
+cd tachyon-node
+cargo build --release
 ```
 
-**Console Features:**
-- ✅ Node control (start/stop/restart)
-- ✅ Real-time log viewing
-- ✅ Stake management
-- ✅ Performance metrics
-- ✅ Reward claiming
-- ✅ Wallet information
-- ✅ Network status
-- ✅ System health monitoring
-
-### Service Management (Manual)
+### 4. Generate Keypair
 
 ```bash
-# Start the node
-sudo systemctl start tachyon-node
-
-# Stop the node
-sudo systemctl stop tachyon-node
-
-# Check status
-sudo systemctl status tachyon-node
-
-# View logs
-sudo journalctl -u tachyon-node -f
+solana-keygen new --outfile ~/.config/tachyon/node-keypair.json
 ```
 
-### CLI Commands (Manual)
+### 5. Configure
 
 ```bash
-# View stake information
-tachyon-node view-stake-info --config /etc/tachyon/node-config.toml
-
-# View performance metrics
-tachyon-node view-performance --config /etc/tachyon/node-config.toml
-
-# Claim rewards
-tachyon-node claim-rewards --config /etc/tachyon/node-config.toml
-
-# Stake additional TACH
-tachyon-node stake --config /etc/tachyon/node-config.toml --amount 50000
-
-# Unstake TACH
-tachyon-node unstake --config /etc/tachyon/node-config.toml --amount 50000
+cp config.example.toml ~/.config/tachyon/node-config.toml
+# Edit config with your settings
 ```
 
-## 📈 Monitoring
-
-### Check Node Status
+### 6. Run Node
 
 ```bash
-# View detailed stake information
+./target/release/tachyon-node start --config ~/.config/tachyon/node-config.toml
+```
+
+---
+
+## 💰 Staking
+
+To participate in consensus, you must stake TACH tokens:
+
+### Minimum Stake: **100,000 TACH**
+
+### Using the Console:
+```bash
+tachyon-console
+# Select option [3] Stake Management
+```
+
+### Using CLI:
+```bash
+tachyon-node stake \
+  --amount 100000 \
+  --config ~/.config/tachyon/node-config.toml
+```
+
+---
+
+## 📊 Monitoring
+
+### Check Node Status:
+```bash
+systemctl status tachyon-node
+```
+
+### View Live Logs:
+```bash
+journalctl -u tachyon-node -f
+```
+
+### Check Stake:
+```bash
 tachyon-node view-stake-info --config /etc/tachyon/node-config.toml
 ```
 
-**Output:**
-```
-╔══════════════════════════════════════════════════════════════╗
-║              📊 DETAILED STAKE INFORMATION                   ║
-╠══════════════════════════════════════════════════════════════╣
-║ 💰 Staked Amount:        100000000.00 TACH                   ║
-║ 📅 Staked Since:         2026-01-02 12:20                    ║
-╠══════════════════════════════════════════════════════════════╣
-║                    🎁 REWARDS SUMMARY                        ║
-╠══════════════════════════════════════════════════════════════╣
-║ 💎 Pending Rewards:              0.00 TACH                   ║
-║ ✅ Total Claimed:                0.00 TACH                   ║
-║ 🔄 Compounded:                   0.00 TACH                   ║
-╠══════════════════════════════════════════════════════════════╣
-║                  📈 PERFORMANCE METRICS                      ║
-╠══════════════════════════════════════════════════════════════╣
-║ 🎯 Uptime Score:         100% (1.5x multiplier)              ║
-║ 📊 Submissions:                     0 total                  ║
-║ ✅ Success Rate:           0% (0/0)                          ║
-╚══════════════════════════════════════════════════════════════╝
-```
-
-### Performance Metrics
-
+### Check Performance:
 ```bash
 tachyon-node view-performance --config /etc/tachyon/node-config.toml
 ```
 
-### Check Batch Submissions
+---
 
-```bash
-# View logs for batch submissions
-sudo journalctl -u tachyon-node -f | grep -i "submit"
-```
+## 🌐 Network Information
 
-## 🏆 Rewards System
+### Mainnet:
+- **RPC:** `https://rpc.mainnet.x1.xyz`
+- **Explorer:** `https://explorer.x1.xyz`
+- **Governance Program:** `TACHdFYQ4uDuAdo6Hz4V1RaCezEpHkVRZGQ7yh24Ad9`
+- **L2 Program:** `L2STdFYQ4uDuAdo6Hz4V1RaCezEpHkVRZGQ7yh24Ad9`
+- **Price Feeds Program:** `PFEDu3nNzRQQYmX1Xvso2BxtPbUQaZEVoiLbXDy6U3W`
 
-### How Rewards Work
+### Active Price Feeds:
+- BTC/USD (updates every 10s)
+- ETH/USD (updates every 10s)
+- SOL/USD (updates every 10s)
+- XNT/USD (updates every 10s)
+- TACH/USD (updates every 10s)
 
-- **Daily Distribution**: 82,000 TACH distributed daily to all stakers
-- **Proportional**: Rewards based on your stake percentage
-- **Performance Multipliers**:
-  - 100% uptime: 1.5x multiplier
-  - 95-99% uptime: 1.25x multiplier
-  - 90-94% uptime: 1.0x multiplier
-  - Below 90%: 0.5x multiplier
-
-### Claiming Rewards
-
-```bash
-tachyon-node claim-rewards --config /etc/tachyon/node-config.toml
-```
+---
 
 ## 🔐 Security
 
-### Keypair Management
+### Best Practices:
+1. **Secure Your Keypair** - Never share your node keypair
+2. **Use Firewall** - Only expose necessary ports
+3. **Keep Updated** - Regularly update your node
+4. **Monitor Logs** - Watch for suspicious activity
+5. **Backup Config** - Keep backups of your configuration
 
-⚠️ **CRITICAL**: Your node keypair is stored at `/var/lib/tachyon/node-keypair.json`
-
-**Security Best Practices:**
-- ✅ Back up your keypair securely offline
-- ✅ Never share your private key
-- ✅ Keep keypair permissions at 600 (read/write for owner only)
-- ✅ Use a separate keypair for each node
-- ❌ Never commit keypairs to version control
-
-### Firewall Configuration
-
+### Recommended Firewall Rules:
 ```bash
-# Allow gossip port (if running multiple nodes)
-sudo ufw allow 9000/tcp
+# Allow SSH
+sudo ufw allow 22/tcp
 
-# Allow API port (if exposing API)
-sudo ufw allow 7777/tcp
+# Allow API (if public)
+sudo ufw allow 8080/tcp
 
 # Enable firewall
 sudo ufw enable
 ```
 
-## 🛠️ Troubleshooting
-
-### Node Won't Start
-
-```bash
-# Check logs for errors
-sudo journalctl -u tachyon-node -n 50
-
-# Verify configuration
-cat /etc/tachyon/node-config.toml
-
-# Check keypair permissions
-ls -la /var/lib/tachyon/node-keypair.json
-```
-
-### Not Submitting Batches
-
-```bash
-# Check if node is leader
-sudo journalctl -u tachyon-node -f | grep -i "leader"
-
-# Verify stake
-tachyon-node view-stake-info --config /etc/tachyon/node-config.toml
-
-# Check for errors
-sudo journalctl -u tachyon-node -p err
-```
-
-### Insufficient Funds
-
-```bash
-# Check XNT balance
-solana balance /var/lib/tachyon/node-keypair.json --url https://rpc.mainnet.x1.xyz
-
-# Transfer more XNT if needed
-solana transfer \
-  --url https://rpc.mainnet.x1.xyz \
-  --keypair ~/.config/solana/id.json \
-  <NODE_PUBKEY> \
-  0.1
-```
+---
 
 ## 📚 Documentation
 
-- **[NEW_NODE_SETUP.md](NEW_NODE_SETUP.md)** - Complete setup guide
-- **[tachyon-node/README.md](tachyon-node/README.md)** - Node implementation details
-- **[l2-contracts/](l2-contracts/)** - Smart contract documentation
+- **Full Docs:** [docs.tachyon.xyz](https://docs.tachyon.xyz) *(coming soon)*
+- **API Reference:** [api.tachyon.xyz](https://api.tachyon.xyz) *(coming soon)*
+- **Discord:** [discord.gg/tachyon](https://discord.gg/tachyon) *(coming soon)*
+- **Twitter:** [@TachyonOracle](https://twitter.com/TachyonOracle) *(coming soon)*
 
-## 🏗️ Smart Contracts
-
-### ⚠️ Important: Contracts Are Already Deployed!
-
-**Node operators DO NOT need to deploy contracts.** The smart contracts are already deployed on X1 mainnet and your node simply references them via their Program IDs in the configuration file.
-
-### Deployed Contracts (Reference Only)
-
-| Contract | Program ID | Description |
-|----------|-----------|-------------|
-| **Governance** | `TACHdFYQ4uDuAdo6Hz4V1RaCezEpHkVRZGQ7yh24Ad9` | Staking, rewards, and governance |
-| **L2 State Compression** | `L2TA7eVsDyXx7nxF4p2Xay3iWgdCHuMPx6YV5odwMTx` | Merkle root storage and verification |
-
-These Program IDs are already configured in your `node-config.toml` file. You just need to:
-1. ✅ Install the node
-2. ✅ Stake your TACH tokens
-3. ✅ Start the service
-
-### For Developers: Building Contracts
-
-**Only needed if you're modifying the contracts:**
-
-```bash
-cd l2-contracts
-anchor build
-```
-
-**Note:** The `l2-contracts` folder is included for reference and transparency, so you can audit the contract code. Node operators don't need to interact with it.
+---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please:
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-**Important**: Never commit private keys or sensitive information!
+---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+---
 
-- **X1 Blockchain**: https://x1.xyz
-- **Explorer**: https://explorer.x1.xyz
-- **GitHub**: https://github.com/xenian84/tachyon-oracles
-- **Documentation**: [NEW_NODE_SETUP.md](NEW_NODE_SETUP.md)
+## 🆘 Support
 
-## 💬 Support
+Need help? Here's how to get support:
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/xenian84/tachyon-oracles/issues)
-- **Documentation**: Check the docs folder for detailed guides
-
-## 🎯 Roadmap
-
-- [x] Rust node implementation
-- [x] Stake-weighted consensus
-- [x] L2 state compression
-- [x] Governance system
-- [x] Rewards distribution
-- [x] Performance tracking
-- [ ] Web dashboard
-- [ ] Multi-chain support
-- [ ] Advanced analytics
-- [ ] Historical data API
-
-## ⚡ Performance
-
-- **Batch Submission**: Every 60 seconds
-- **Price Updates**: Real-time from multiple exchanges
-- **Consensus**: Stake-weighted leader selection
-- **Throughput**: Handles 100+ price feeds efficiently
-
-## 🌟 Acknowledgments
-
-Built with ❤️ for the X1 ecosystem using:
-- [Rust](https://www.rust-lang.org/)
-- [Anchor Framework](https://www.anchor-lang.com/)
-- [Solana](https://solana.com/)
+1. **Check Logs:** `journalctl -u tachyon-node -f`
+2. **Discord:** Join our community *(coming soon)*
+3. **GitHub Issues:** [Report a bug](https://github.com/xenian84/tachyon-oracles/issues)
+4. **Email:** support@tachyon.xyz *(coming soon)*
 
 ---
 
-**Ready to run your own oracle node? Get started with the [Quick Start](#-quick-start) guide!**
+## 🎯 Roadmap
 
+### Phase 1: Launch ✅
+- [x] Core oracle node
+- [x] Price feeds contract
+- [x] Stake-weighted consensus
+- [x] Initial price feeds (BTC, ETH, SOL)
+
+### Phase 2: Expansion 🚧
+- [ ] Public dashboard (Pyth-style)
+- [ ] More price feeds (100+ assets)
+- [ ] Multi-validator network (10+ nodes)
+- [ ] Historical data API
+
+### Phase 3: Decentralization 🔮
+- [ ] DAO governance for feed curation
+- [ ] Community-driven development
+- [ ] Cross-chain integration
+- [ ] Advanced analytics
+
+---
+
+## 💡 Why Tachyon?
+
+### **Fast**
+- Sub-second price updates
+- 10-second fetch intervals
+- 60-second on-chain submissions
+
+### **Accurate**
+- Multiple data sources
+- Median aggregation
+- Confidence intervals
+- Outlier detection
+
+### **Secure**
+- Stake-weighted consensus
+- Slashing for bad actors
+- Merkle tree verification
+- On-chain transparency
+
+### **Decentralized**
+- No single point of failure
+- Community-driven governance
+- Open-source codebase
+- Permissionless participation
+
+---
+
+## 🌟 Join the Network!
+
+Become a Tachyon validator today:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/xenian84/tachyon-oracles/main/install.sh | bash
+```
+
+**Let's build the future of decentralized oracles together!** 🚀
+
+---
+
+*Built with ❤️ by the Tachyon community*
