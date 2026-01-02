@@ -28,30 +28,45 @@ Tachyon Oracle Node is a Rust-based oracle implementation that:
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                   Tachyon Oracle Node (Rust)                │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌──────────────┐    ┌──────────────┐    ┌─────────────┐  │
-│  │   Consensus  │───▶│   Sequencer  │───▶│ L2 Contract │  │
-│  │              │    │              │    │             │  │
-│  │ Stake-based  │    │ Batch Price  │    │ Merkle Root │  │
-│  │ Leader       │    │ Submissions  │    │ Storage     │  │
-│  │ Selection    │    │              │    │             │  │
-│  └──────────────┘    └──────────────┘    └─────────────┘  │
-│         │                    │                    │         │
-│         └────────────────────┴────────────────────┘         │
-│                              │                              │
-│                   ┌──────────▼──────────┐                   │
-│                   │   Governance        │                   │
-│                   │   Contract          │                   │
-│                   │                     │                   │
-│                   │ • Staking           │                   │
-│                   │ • Rewards           │                   │
-│                   │ • Voting            │                   │
-│                   └─────────────────────┘                   │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+╔═══════════════════════════════════════════════════════════════════╗
+║                  🚀 Tachyon Oracle Node (Rust)                    ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║    ┌─────────────────┐      ┌─────────────────┐                   ║
+║    │   📊 CONSENSUS         │  📦 SEQUENCER  │                   ║ 
+║    │                 │      │                 │                   ║
+║    │  Stake-Weighted │──────▶  Batch Price                       ║
+║    │  Leader Select  │      │   Submissions   │                   ║
+║    └─────────────────┘      └─────────────────┘                   ║
+║            │                         │                            ║
+║            │                         │                            ║
+║            │                         ▼                            ║
+║            │              ┌─────────────────┐                     ║
+║            │              │ 🔗L2 CONTRACT  │                      
+║            │              │                 │                     ║
+║            │              │  Merkle Root    │                     ║
+║            │              │    Storage      │                     ║
+║            │              └─────────────────┘                     ║
+║            │                         │                            ║
+║            └─────────────────────────┘                            ║
+║                          │                                        ║
+║                          ▼                                        ║
+║              ┌───────────────────────┐                            ║
+║                ⚖️  GOVERNANCE                                    ║
+║              │                       │                            ║
+║              │  • Staking System     │                            ║
+║              │  • Rewards Pool       │                            ║
+║              │  • DAO Voting         │                            ║
+║              │  • Performance Track  │                            ║
+║              └───────────────────────┘                            ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+Flow:
+  1. Consensus module selects leader based on stake weight
+  2. Sequencer batches price feeds from multiple exchanges
+  3. Leader submits Merkle root to L2 Contract
+  4. Governance tracks performance and distributes rewards
 ```
 
 ## 🚀 Quick Start
@@ -127,7 +142,26 @@ exchanges = ["binance", "coinbase"]
 
 ## 📝 Usage
 
-### Service Management
+### 🎮 Interactive Console (Recommended)
+
+The easiest way to manage your node is using the interactive console:
+
+```bash
+# Run the console
+sudo bash tachyon-console.sh
+```
+
+**Console Features:**
+- ✅ Node control (start/stop/restart)
+- ✅ Real-time log viewing
+- ✅ Stake management
+- ✅ Performance metrics
+- ✅ Reward claiming
+- ✅ Wallet information
+- ✅ Network status
+- ✅ System health monitoring
+
+### Service Management (Manual)
 
 ```bash
 # Start the node
@@ -143,7 +177,7 @@ sudo systemctl status tachyon-node
 sudo journalctl -u tachyon-node -f
 ```
 
-### CLI Commands
+### CLI Commands (Manual)
 
 ```bash
 # View stake information
@@ -300,19 +334,32 @@ solana transfer \
 
 ## 🏗️ Smart Contracts
 
-### Deployed Contracts
+### ⚠️ Important: Contracts Are Already Deployed!
+
+**Node operators DO NOT need to deploy contracts.** The smart contracts are already deployed on X1 mainnet and your node simply references them via their Program IDs in the configuration file.
+
+### Deployed Contracts (Reference Only)
 
 | Contract | Program ID | Description |
 |----------|-----------|-------------|
 | **Governance** | `TACHdFYQ4uDuAdo6Hz4V1RaCezEpHkVRZGQ7yh24Ad9` | Staking, rewards, and governance |
 | **L2 State Compression** | `L2TA7eVsDyXx7nxF4p2Xay3iWgdCHuMPx6YV5odwMTx` | Merkle root storage and verification |
 
-### Building Contracts
+These Program IDs are already configured in your `node-config.toml` file. You just need to:
+1. ✅ Install the node
+2. ✅ Stake your TACH tokens
+3. ✅ Start the service
+
+### For Developers: Building Contracts
+
+**Only needed if you're modifying the contracts:**
 
 ```bash
 cd l2-contracts
 anchor build
 ```
+
+**Note:** The `l2-contracts` folder is included for reference and transparency, so you can audit the contract code. Node operators don't need to interact with it.
 
 ## 🤝 Contributing
 
